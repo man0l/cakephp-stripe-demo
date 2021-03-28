@@ -8,12 +8,6 @@ class AddUser extends AbstractMigration
     public function up()
     {
         $table = $this->table('users');
-        $table->addColumn('oioubl_file_name', 'string', [
-            'default' => null,
-            'limit' => 255,
-            'null' => true,
-            'after' => 'pdf_file_name',
-        ]);
 
         $table->addColumn('email', 'string', [
             'default' => null,

@@ -55,11 +55,6 @@ class UsersTable extends Table
             ->allowEmptyString('id', null, 'create');
 
         $validator
-            ->scalar('oioubl_file_name')
-            ->maxLength('oioubl_file_name', 255)
-            ->allowEmptyFile('oioubl_file_name');
-
-        $validator
             ->email('email')
             ->requirePresence('email', 'create')
             ->notEmptyString('email');

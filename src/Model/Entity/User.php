@@ -9,7 +9,6 @@ use Cake\ORM\Entity;
  * User Entity
  *
  * @property int $id
- * @property string|null $oioubl_file_name
  * @property string $email
  * @property string $password
  * @property string|null $firstname
@@ -28,7 +27,6 @@ class User extends Entity
      * @var array
      */
     protected $_accessible = [
-        'oioubl_file_name' => true,
         'email' => true,
         'password' => true,
         'firstname' => true,
