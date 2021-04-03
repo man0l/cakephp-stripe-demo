@@ -40,8 +40,8 @@ class UsersController extends AppController
             $stripe = new StripeClient(env('STRIPE_SECRET'));
             $result = $stripe->accountLinks->create([
                 'account' => env('STRIPE_ACCOUNT_ID'),
-                'refresh_url' => Router::url(['controller' => 'Users', 'action' => 'refresh']),
-                'return_url' => Router::url(['controller' => 'Users', 'action' => 'return']),
+                'refresh_url' => Router::url(['controller' => 'Users', 'action' => 'refresh'], true),
+                'return_url' => Router::url(['controller' => 'Users', 'action' => 'return'], true),
                 'type' => 'account_onboarding',
             ]);
 
