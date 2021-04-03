@@ -5,6 +5,8 @@ namespace App\Controller;
 
 use App\Model\Entity\User;
 use Cake\Event\EventInterface;
+use Cake\Routing\Router;
+use Stripe\StripeClient;
 
 /**
  * Users Controller
@@ -23,12 +25,42 @@ class UsersController extends AppController
     public function beforeFilter(EventInterface $event)
     {
         parent::beforeFilter($event);
-        $this->Auth->allow(['add', 'logout']);
+        $this->Auth->allow(['add', 'login', 'logout']);
+        $this->set('user', $this->Auth->user());
     }
 
-    public function index(): void
+    /**
+     * @return \Cake\Http\Response|void|null
+     * @throws \Stripe\Exception\ApiErrorException
+     */
+    public function index()
     {
-        // redirect to stripe?
+        if ($this->request->is('post')) {
+
+            $stripe = new StripeClient(env('STRIPE_SECRET'));
+            $result = $stripe->accountLinks->create([
+                'account' => env('STRIPE_ACCOUNT_ID'),
+                'refresh_url' => Router::url(['controller' => 'Users', 'action' => 'refresh']),
+                'return_url' => Router::url(['controller' => 'Users', 'action' => 'return']),
+                'type' => 'account_onboarding',
+            ]);
+
+            if (empty($result)) {
+                return;
+            }
+
+            return $this->redirect($result->url);
+        }
+    }
+
+    public function return(): void
+    {
+
+    }
+
+    public function refresh(): void
+    {
+
     }
 
     public function add(): void
@@ -47,7 +79,7 @@ class UsersController extends AppController
         $this->Crud->on('afterSave', function (EventInterface $event) {
             if ($event->getSubject()->success) {
                 $this->Flash->success(__('The user has been saved.'));
-                return $this->redirect(['action' => 'add']);
+                return $this->redirect(['action' => 'login']);
             }
         });
         $this->Crud->execute();
@@ -59,7 +91,7 @@ class UsersController extends AppController
             $user = $this->Auth->identify();
             if (!empty($user)) {
                 $this->Auth->setUser($user);
-                $this->redirect($this->Auth->redirectUrl());
+                return $this->redirect($this->Auth->redirectUrl());
             }
 
             $this->Flash->error(__('Invalid username or password'));
