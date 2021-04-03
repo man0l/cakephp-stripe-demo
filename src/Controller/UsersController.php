@@ -17,13 +17,18 @@ class UsersController extends AppController
     public function initialize(): void
     {
         parent::initialize();
-        $this->Crud->disable(['index', 'view', 'edit', 'delete']);
+        $this->Crud->disable(['view', 'edit', 'delete']);
     }
 
     public function beforeFilter(EventInterface $event)
     {
         parent::beforeFilter($event);
-        $this->Auth->allow('add');
+        $this->Auth->allow(['add', 'logout']);
+    }
+
+    public function index(): void
+    {
+        // redirect to stripe?
     }
 
     public function add(): void
@@ -46,5 +51,23 @@ class UsersController extends AppController
             }
         });
         $this->Crud->execute();
+    }
+
+    public function login()
+    {
+        if ($this->request->is('post')) {
+            $user = $this->Auth->identify();
+            if (!empty($user)) {
+                $this->Auth->setUser($user);
+                $this->redirect($this->Auth->redirectUrl());
+            }
+
+            $this->Flash->error(__('Invalid username or password'));
+        }
+    }
+
+    public function logout()
+    {
+        return $this->redirect($this->Auth->logout());
     }
 }
