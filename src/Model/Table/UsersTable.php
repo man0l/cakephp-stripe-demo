@@ -40,6 +40,14 @@ class UsersTable extends Table
         $this->setTable('users');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
+
+        $this->addBehavior('Timestamp', [
+            'events' => [
+                'Model.beforeSave' => [
+                    'created_at' => 'new',
+                ]
+            ]
+        ]);
     }
 
     /**
@@ -78,7 +86,7 @@ class UsersTable extends Table
         $validator
             ->dateTime('created_at')
             ->requirePresence('created_at', 'create')
-            ->notEmptyDateTime('created_at');
+            ->allowEmptyDateTime('created_at');
 
         return $validator;
     }
